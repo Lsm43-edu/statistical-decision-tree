@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Test Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Statistical Test Selector</h1>
+
+<div class="question">
+    <label for="data-type">What type of data are you analyzing?</label>
+    <select id="data-type">
+        <option value="">--Select--</option>
+        <option value="nominal">Nominal</option>
+        <option value="ordinal">Ordinal</option>
+        <option value="interval">Interval/Ratio</option>
+    </select>
+</div>
+
+<div class="question hidden" id="nominal-question">
+    <p>Is it a relationship between variables or differences between groups?</p>
+    <select id="nominal-choice">
+        <option value="">--Select--</option>
+        <option value="relationship">Relationship</option>
+        <option value="difference">Difference</option>
+    </select>
+</div>
+
+<div class="question hidden" id="ordinal-question">
+    <p>Is it a relationship or a difference?</p>
+    <select id="ordinal-choice">
+        <option value="">--Select--</option>
+        <option value="relationship">Relationship</option>
+        <option value="difference">Difference</option>
+    </select>
+</div>
+
+<div class="question hidden" id="interval-question">
+    <p>Are you testing for relationships or differences?</p>
+    <select id="interval-choice">
+        <option value="">--Select--</option>
+        <option value="relationship">Relationship</option>
+        <option value="difference">Difference</option>
+    </select>
+</div>
+
+<div class="question hidden" id="groups-question">
+    <p>How many groups are you comparing?</p>
+    <select id="groups-choice">
+        <option value="">--Select--</option>
+        <option value="2">2 Groups</option>
+        <option value="more">More than 2 Groups</option>
+    </select>
+</div>
+
+<div class="question hidden" id="independence-question">
+    <p>Are the groups independent or dependent?</p>
+    <select id="independence-choice">
+        <option value="">--Select--</option>
+        <option value="independent">Independent</option>
+        <option value="dependent">Dependent</option>
+    </select>
+</div>
+
+<div class="question hidden" id="distribution-question">
+    <p>Is the data normally distributed?</p>
+    <select id="distribution-choice">
+        <option value="">--Select--</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+    </select>
+</div>
+
+<!-- Final Result -->
+<div class="hidden" id="result">
+    <h2>Suggested Statistical Test</h2>
+    <p id="test-output"></p>
+</div>
+
+<script>
+    // HTML element references
+    const dataType = document.getElementById('data-type');
+    const nominalQuestion = document.getElementById('nominal-question');
+    const ordinalQuestion = document.getElementById('ordinal-question');
+    const intervalQuestion = document.getElementById('interval-question');
+    const groupsQuestion = document.getElementById('groups-question');
+    const independenceQuestion = document.getElementById('independence-question');
+    const distributionQuestion = document.getElementById('distribution-question');
+    const resultDiv = document.getElementById('result');
+    const testOutput = document.getElementById('test-output');
+
+    // Show appropriate questions based on data type selection
+    dataType.addEventListener('change', function() {
+        resetForm();
+        const value = this.value;
+        if (value === 'nominal') {
+            nominalQuestion.classList.remove('hidden');
+        } else if (value === 'ordinal') {
+            ordinalQuestion.classList.remove('hidden');
+        } else if (value === 'interval') {
+            intervalQuestion.classList.remove('hidden');
+        }
+    });
+
+    // Event listeners for subsequent questions
+    document.getElementById('nominal-choice').addEventListener('change', function() {
+        if (this.value === 'relationship') {
+            showResult('Chi-Square test');
+        } else {
+            groupsQuestion.classList.remove('hidden');
+        }
+    });
+
+    document.getElementById('ordinal-choice').addEventListener('change', function() {
+        if (this.value === 'relationship') {
+            showResult('Spearman\'s rho');
+        } else {
+            groupsQuestion.classList.remove('hidden');
+        }
+    });
+
+    document.getElementById('interval-choice').addEventListener('change', function() {
+        if (this.value === 'relationship') {
+            showResult('Pearson\'s r or Multiple Regression');
+        } else {
+            groupsQuestion.classList.remove('hidden');
+        }
+    });
+
+    // Number of groups decision
+    document.getElementById('groups-choice').addEventListener('change', function() {
+        const value = this.value;
+        if (value === '2') {
+            independenceQuestion.classList.remove('hidden');
+        } else {
+            showResult('ANOVA or Kruskal-Wallis ANOVA');
+        }
+    });
+
+    // Independent or dependent groups
+    document.getElementById('independence-choice').addEventListener('change', function() {
+        if (this.value === 'independent') {
+            distributionQuestion.classList.remove('hidden');
+        } else {
+            showResult('RM ANOVA or Wilcoxon Matched-pairs Test');
+        }
+    });
+
+    // Normally distributed data
+    document.getElementById('distribution-choice').addEventListener('change', function() {
+        if (this.value === 'yes') {
+            showResult('Independent t-test');
+        } else {
+            showResult('Mann-Whitney U test');
+        }
+    });
+
+    // Function to display result
+    function showResult(test) {
+        testOutput.innerText = test;
+        resultDiv.classList.remove('hidden');
+    }
+
+    // Reset form visibility
+    function resetForm() {
+        nominalQuestion.classList.add('hidden');
+        ordinalQuestion.classList.add('hidden');
+        intervalQuestion.classList.add('hidden');
+        groupsQuestion.classList.add('hidden');
+        independenceQuestion.classList.add('hidden');
+        distributionQuestion.classList.add('hidden');
+        resultDiv.classList.add('hidden');
+        testOutput.innerText = '';
+    }
+</script>
+
+</body>
+</html>
